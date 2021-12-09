@@ -1,3 +1,4 @@
+//This Jenkinsfile gives overview of automation steps mainly.
 pipeline {
 
     parameters {
