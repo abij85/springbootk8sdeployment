@@ -1,0 +1,78 @@
+#This yaml will configure automated database deployment job in kubernetes also provision resources in kubernetes
+
+kind: Template
+apiVersion: v1
+metadata:
+  name: db-deployment-job
+  labels:
+    app: db-deployment
+
+parameters:
+  - name: REPLICAS
+    value: "1"
+    description: "number of pods"
+    displayName: Desired Replicas
+  - name: DOCKER_REGISTRY
+    value: "docker/registry"
+
+objects:
+# This is the main job component deploy DB changes as a kubernetes jon , once done job is also completed same as Azure function.
+  - apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: db-deployment-job
+    spec:
+      template:
+        spec:
+          selectors:
+            app: db-deployment-job
+          template:
+            metadata:
+              labels:
+                app: db-deployment-job
+            spec:
+             containers:
+              - name: db-deployment-job
+                image: TO_BE_COMMITED_NEXT
+                resources:
+                  requests:
+                    cpu: 0.5
+                    memory: 200Mi
+                  limits:
+                    cpu: 1
+                    memory: 2Gi
+                env:
+                  - name: _JAVA_OPTIONS
+                    value: to_be_passed
+                  - name: TRUSTSTORE_ENV_VAR
+                    value: /MOUNT_VOLUME/TRUST_VALUE.jks
+                  - name: KEYSTORE_ENV_VAR
+                    value: /MOUNT_VOLUME/KEY_VALUE.p12
+                  - name: KEY_PWD
+                    valueFrom:
+                      secretKeyRef:
+                        name: key
+                        value: key.file
+                  - name: TRUST_PWD
+                    valueFrom:
+                      secretKeyRef:
+                        name: trust
+                        value: trust.file
+                ports:
+                  - containerPort: 8443
+                volumeMounts:
+                  - name: key
+                    mountPath: "/MOUNT_VOLUME"
+                    readOnly: true
+                  - name: trust
+                    mountPath: "/MOUNT_VOLUME"
+                    readOnly: true
+            volumes:
+              - name: key
+                secret:
+                  secretName: key
+              - name: trust
+                secret:
+                  secretName: trust
+            restartPolicy: Never
+            backoffLimit: 2
