@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class InfraautomationApplication {
+public class DeployDatabaseApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(InfraautomationApplication.class, args);
+		SpringApplication.run(DeployDatabaseApplication.class, args);
 	}
 
 }
